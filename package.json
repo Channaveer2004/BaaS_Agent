@@ -1,5 +1,5 @@
 {
-  "name": "Baas_Agent",
+  "name": "baas-agent",
   "description": "Baas Integration Test",
   "scripts": {
     "start": "vite",
@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "firebase": "^11.2.0",
     "vite": "latest"
-  },
-  "devDependencies": {}
+  }
 }

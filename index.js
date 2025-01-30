@@ -1,5 +1,23 @@
 /*  Imports  */
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBRPzAMwpiBbox107XcW-AGo6Ku6qGezVE",
+  authDomain: "baasagent-13336.firebaseapp.com",
+  projectId: "baasagent-13336",
+  storageBucket: "baasagent-13336.firebasestorage.app",
+  messagingSenderId: "495668832792",
+  appId: "1:495668832792:web:8e6c93ee57be01622b716d"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 /*  Firebase Setup  */
 
 /*  UI  */
