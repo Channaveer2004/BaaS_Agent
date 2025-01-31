@@ -1,12 +1,13 @@
-/*  Imports  */
-
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+    getAuth,
+    createUserWithEmailAndPassword, sendEmailVerification,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+}
+    from "firebase/auth";
 
-
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBRPzAMwpiBbox107XcW-AGo6Ku6qGezVE",
     authDomain: "baasagent-13336.firebaseapp.com",
@@ -16,42 +17,38 @@ const firebaseConfig = {
     appId: "1:495668832792:web:8e6c93ee57be01622b716d"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
 
 
-/*  Firebase Setup  */
-
-/*  UI  */
-
-/*  UI - Elements  */
 
 const viewLoggedOut = document.getElementById("logged-out-view")
 const viewLoggedIn = document.getElementById("logged-in-view")
-
 const signInWithGoogleButtonEl = document.getElementById("sign-in-with-google-btn")
-
 const emailInputEl = document.getElementById("email-input")
 const passwordInputEl = document.getElementById("password-input")
-
 const signInButtonEl = document.getElementById("sign-in-btn")
 const createAccountButtonEl = document.getElementById("create-account-btn")
+const signOutButtonEl = document.getElementById("sign-out-btn")
 
-/*  UI - Event Listeners  */
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
-
 signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
+signOutButtonEl.addEventListener("click", authSignOut)
 
-/*  Main Code  */
 
-showLoggedOutView()
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        showLoggedInView();
+        const uid = user.uid;
+        
+    } else {
+        showLoggedOutView();    
+    }
+});
 
-/*  Functions  */
-
-/* = Functions - Firebase - Authentication = */
 
 function authSignInWithGoogle() {
     console.log("Sign in with Google")
@@ -59,6 +56,19 @@ function authSignInWithGoogle() {
 
 function authSignInWithEmail() {
     console.log("Sign in with email and password")
+
+    const email = emailInputEl.value
+    const password = passwordInputEl.value
+
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            emailInputEl.value = "";
+            passwordInputEl.value = "";
+        })
+        .catch((error) => {
+            console.error(error.message);
+            alert("Coudn't sign in with the provided credentials");
+        });
 }
 
 function authCreateAccountWithEmail() {
@@ -68,11 +78,14 @@ function authCreateAccountWithEmail() {
     const password = passwordInputEl.value
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed up 
-            showLoggedInView();
-            // ...
+            emailInputEl.value = "";
+            passwordInputEl.value = "";
         })
         .catch((error) => {
+            if (password.length < 6) {
+                alert("Password should be at least 6 characters long");
+                return;
+            }
             console.error(error.message);
             alert("Please enter a valid email and password");
             // ..
@@ -86,22 +99,36 @@ function authCreateAccountWithEmail() {
     //     });
 }
 
-/*  Functions - UI Functions  */
+function authSignOut() {
+    signOut(auth).then(() => {
+        
+        emailInputEl.value = "";
+        passwordInputEl.value = "";
+        /*clearInputField(emailInputEl)    clearInputField(passwordInputEl)  
+        this can also be done by defining in seperate function and calling it here
+        */
+
+    }).catch((error) => {
+        console.error(error.message);
+        alert("Couldn't sign out");
+    });
+
+}
 
 function showLoggedOutView() {
-    hideElement(viewLoggedIn)
-    showElement(viewLoggedOut)
+    hideView(viewLoggedIn)
+    showView(viewLoggedOut)
 }
 
 function showLoggedInView() {
-    hideElement(viewLoggedOut)
-    showElement(viewLoggedIn)
+    hideView(viewLoggedOut)
+    showView(viewLoggedIn)
 }
 
-function showElement(element) {
-    element.style.display = "flex"
+function showView(view) {
+    view.style.display = "flex"
 }
 
-function hideElement(element) {
-    element.style.display = "none"
+function hideView(view) {
+    view.style.display = "none"
 }

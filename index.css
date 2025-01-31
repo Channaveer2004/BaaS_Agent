@@ -171,3 +171,21 @@ button:hover {
 #logged-in-view {
     display: none;
 }
+
+
+.icon-btn {
+    width: 100px;
+    height: 50px;
+    background-color: #62EEA8;
+    position: absolute;
+    top: 30px;
+    right: 5px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.icon-btn:hover {
+    cursor: pointer;
+    background-color: #00ff8067;
+}
