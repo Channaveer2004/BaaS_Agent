@@ -4,7 +4,9 @@ import {
     createUserWithEmailAndPassword, sendEmailVerification,
     signInWithEmailAndPassword,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup,
 }
     from "firebase/auth";
 
@@ -20,7 +22,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
-
+const provider = new GoogleAuthProvider()
 
 
 const viewLoggedOut = document.getElementById("logged-out-view")
@@ -43,15 +45,29 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         showLoggedInView();
         const uid = user.uid;
-        
+
     } else {
-        showLoggedOutView();    
+        showLoggedOutView();
     }
 });
 
 
 function authSignInWithGoogle() {
-    console.log("Sign in with Google")
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            console.log("Sign in with Google")
+            alert("Signed in with Google")
+
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const user = result.user;
+
+            console.log(user, token, credential)
+            
+        }).catch((error) => {
+            console.error(error.message);
+            alert("Couldn't sign in with Google");
+        });
 }
 
 function authSignInWithEmail() {
@@ -64,6 +80,7 @@ function authSignInWithEmail() {
         .then((userCredential) => {
             emailInputEl.value = "";
             passwordInputEl.value = "";
+            console.log(userCredential)
         })
         .catch((error) => {
             console.error(error.message);
@@ -101,7 +118,6 @@ function authCreateAccountWithEmail() {
 
 function authSignOut() {
     signOut(auth).then(() => {
-        
         emailInputEl.value = "";
         passwordInputEl.value = "";
         /*clearInputField(emailInputEl)    clearInputField(passwordInputEl)  
