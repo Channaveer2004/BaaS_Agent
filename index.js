@@ -2,21 +2,24 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBRPzAMwpiBbox107XcW-AGo6Ku6qGezVE",
-  authDomain: "baasagent-13336.firebaseapp.com",
-  projectId: "baasagent-13336",
-  storageBucket: "baasagent-13336.firebasestorage.app",
-  messagingSenderId: "495668832792",
-  appId: "1:495668832792:web:8e6c93ee57be01622b716d"
+    apiKey: "AIzaSyBRPzAMwpiBbox107XcW-AGo6Ku6qGezVE",
+    authDomain: "baasagent-13336.firebaseapp.com",
+    projectId: "baasagent-13336",
+    storageBucket: "baasagent-13336.firebasestorage.app",
+    messagingSenderId: "495668832792",
+    appId: "1:495668832792:web:8e6c93ee57be01622b716d"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
+
 
 /*  Firebase Setup  */
 
@@ -60,6 +63,27 @@ function authSignInWithEmail() {
 
 function authCreateAccountWithEmail() {
     console.log("Sign up with email and password")
+
+    const email = emailInputEl.value
+    const password = passwordInputEl.value
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed up 
+            showLoggedInView();
+            // ...
+        })
+        .catch((error) => {
+            console.error(error.message);
+            alert("Please enter a valid email and password");
+            // ..
+        });
+
+    // Send email verification
+    // sendEmailVerification(auth.currentUser)
+    //     .then(() => {
+    //         alert("Email verification sent!");
+    //         // ...
+    //     });
 }
 
 /*  Functions - UI Functions  */

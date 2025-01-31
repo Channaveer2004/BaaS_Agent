@@ -1,6 +1,7 @@
 {
   "name": "baas-agent",
   "description": "Baas Integration Test",
+  "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite",
