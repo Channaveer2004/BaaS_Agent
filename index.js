@@ -11,6 +11,9 @@ import {
 }
     from "firebase/auth";
 
+import { getFirestore, collection, addDoc } from "firebase/firestore"
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyBRPzAMwpiBbox107XcW-AGo6Ku6qGezVE",
     authDomain: "baasagent-13336.firebaseapp.com",
@@ -24,6 +27,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
+const db = getFirestore(app)
 
 
 const viewLoggedOut = document.getElementById("logged-out-view")
@@ -39,6 +43,8 @@ const userGreetingEl = document.getElementById("user-greeting")
 const displayNameInputEl = document.getElementById("display-name-input")
 const photoURLInputEl = document.getElementById("photo-url-input")
 const updateProfileButtonEl = document.getElementById("update-profile-btn")
+const textareaEl = document.getElementById("post-input")
+const postButtonEl = document.getElementById("post-btn")
 
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -46,6 +52,7 @@ signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 signOutButtonEl.addEventListener("click", authSignOut)
 updateProfileButtonEl.addEventListener("click", authUpdateProfile)
+postButtonEl.addEventListener("click", postButtonPressed)
 
 
 onAuthStateChanged(auth, (user) => {
@@ -131,6 +138,10 @@ function authSignOut() {
     });
 }
 
+async function addPostToDB(postBody) {
+    
+}
+
 function authUpdateProfile() {
     const newDisplayName = displayNameInputEl.value;
     const newPhotoURL = photoURLInputEl.value;
@@ -149,6 +160,15 @@ function authUpdateProfile() {
         console.error(error.message);
         alert("Couldn't update profile");
     });
+}
+
+function postButtonPressed() {
+    const postBody = textareaEl.value
+
+    if (postBody) {
+        // addPostToDB(postBody)
+        clearInputField(textareaEl)
+    }
 }
 
 function showLoggedOutView() {
