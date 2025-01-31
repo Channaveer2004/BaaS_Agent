@@ -7,6 +7,7 @@ import {
     onAuthStateChanged,
     GoogleAuthProvider,
     signInWithPopup,
+    updateProfile,
 }
     from "firebase/auth";
 
@@ -33,18 +34,25 @@ const passwordInputEl = document.getElementById("password-input")
 const signInButtonEl = document.getElementById("sign-in-btn")
 const createAccountButtonEl = document.getElementById("create-account-btn")
 const signOutButtonEl = document.getElementById("sign-out-btn")
+const userProfilePictureEl = document.getElementById("user-profile-picture")
+const userGreetingEl = document.getElementById("user-greeting")
+const displayNameInputEl = document.getElementById("display-name-input")
+const photoURLInputEl = document.getElementById("photo-url-input")
+const updateProfileButtonEl = document.getElementById("update-profile-btn")
 
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
 signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 signOutButtonEl.addEventListener("click", authSignOut)
+updateProfileButtonEl.addEventListener("click", authUpdateProfile)
 
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         showLoggedInView();
-        const uid = user.uid;
+        showProfilePicture(userProfilePictureEl, user)
+        showUserGreeting(userGreetingEl, user)
 
     } else {
         showLoggedOutView();
@@ -58,12 +66,6 @@ function authSignInWithGoogle() {
             console.log("Sign in with Google")
             alert("Signed in with Google")
 
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            const user = result.user;
-
-            console.log(user, token, credential)
-            
         }).catch((error) => {
             console.error(error.message);
             alert("Couldn't sign in with Google");
@@ -105,7 +107,6 @@ function authCreateAccountWithEmail() {
             }
             console.error(error.message);
             alert("Please enter a valid email and password");
-            // ..
         });
 
     // Send email verification
@@ -128,7 +129,26 @@ function authSignOut() {
         console.error(error.message);
         alert("Couldn't sign out");
     });
+}
 
+function authUpdateProfile() {
+    const newDisplayName = displayNameInputEl.value;
+    const newPhotoURL = photoURLInputEl.value;
+
+    updateProfile(auth.currentUser, {
+        displayName: newDisplayName, photoURL: newPhotoURL
+    }).then(() => {
+        alert("Profile updated");
+        userGreetingEl.textContent = `Hey ${newDisplayName}, how are you?`;
+        userProfilePictureEl.src = newPhotoURL;
+        displayNameInputEl.style.display = "none";
+        photoURLInputEl.style.display = "none";
+        updateProfileButtonEl.style.display = "none";
+
+    }).catch((error) => {
+        console.error(error.message);
+        alert("Couldn't update profile");
+    });
 }
 
 function showLoggedOutView() {
@@ -147,4 +167,28 @@ function showView(view) {
 
 function hideView(view) {
     view.style.display = "none"
+}
+
+function showProfilePicture(imgElement, user) {
+    const photoURL = user.photoURL
+
+    if (photoURL) {
+        imgElement.src = photoURL
+    } else {
+        imgElement.src = "assets/images/default-user-image.jpeg"
+    }
+}
+
+
+function showUserGreeting(element, user) {
+    const displayName = user.displayName;
+    if (displayName) {
+        const userFirstName = displayName.split(" ")[0]
+
+        element.textContent = `Hey ${userFirstName}, how are you?`
+    }
+
+    else {
+        element.textContent = "Hey friend, how are you?";
+    }
 }

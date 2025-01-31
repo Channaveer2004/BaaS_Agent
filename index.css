@@ -172,6 +172,37 @@ button:hover {
     display: none;
 }
 
+.app-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.user-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+h2 {
+    font-weight: 500;
+}
+
+.user-section h2 {
+    font-size: 1.2em;
+}
+
+.user-section img {
+    width: 3.75em;
+    height: 3.75em;
+    border-radius: 100%;
+    border: var(--border-width) solid var(--dark-color);
+}
 
 .icon-btn {
     width: 100px;
