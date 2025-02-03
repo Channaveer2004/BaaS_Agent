@@ -139,7 +139,14 @@ function authSignOut() {
 }
 
 async function addPostToDB(postBody) {
-    
+    try {
+        const docRef = await addDoc(collection(db, "posts"), {
+            body: postBody
+        })
+        console.log("Document written with ID: ", docRef.id)
+    } catch (error) {
+        console.error(error.message)
+    }
 }
 
 function authUpdateProfile() {
@@ -166,8 +173,8 @@ function postButtonPressed() {
     const postBody = textareaEl.value
 
     if (postBody) {
-        // addPostToDB(postBody)
-        clearInputField(textareaEl)
+        addPostToDB(postBody)
+        textareaEl.value = "";
     }
 }
 
