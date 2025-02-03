@@ -49,6 +49,7 @@ const photoURLInputEl = document.getElementById("photo-url-input")
 const updateProfileButtonEl = document.getElementById("update-profile-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
+const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -186,6 +187,12 @@ function postButtonPressed() {
     }
 }
 
+for (let moodEmojiEl of moodEmojiEls) {
+    moodEmojiEl.addEventListener("click", selectMood)
+}
+
+let moodState = 0;
+
 function showLoggedOutView() {
     hideView(viewLoggedIn)
     showView(viewLoggedOut)
@@ -209,21 +216,61 @@ function showProfilePicture(imgElement, user) {
 
     if (photoURL) {
         imgElement.src = photoURL
+        displayNameInputEl.style.display = "none";
+        photoURLInputEl.style.display = "none";
+        updateProfileButtonEl.style.display = "none";
     } else {
         imgElement.src = "assets/images/default-user-image.jpeg"
     }
 }
 
-
 function showUserGreeting(element, user) {
     const displayName = user.displayName;
     if (displayName) {
         const userFirstName = displayName.split(" ")[0]
-
         element.textContent = `Hey ${userFirstName}, how are you?`
+        displayNameInputEl.style.display = "none";
+        photoURLInputEl.style.display = "none";
+        updateProfileButtonEl.style.display = "none";
     }
 
     else {
         element.textContent = "Hey friend, how are you?";
     }
+}
+
+
+function selectMood(event) {
+    const selectedMoodEmojiElementId = event.currentTarget.id
+    
+    changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
+    
+    const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
+    
+    moodState = chosenMoodValue
+}
+
+function changeMoodsStyleAfterSelection(selectedMoodElementId, allMoodElements) {
+    for (let moodEmojiEl of moodEmojiEls) {
+        if (selectedMoodElementId === moodEmojiEl.id) {
+            moodEmojiEl.classList.remove("unselected-emoji")          
+            moodEmojiEl.classList.add("selected-emoji")
+        } else {
+            moodEmojiEl.classList.remove("selected-emoji")
+            moodEmojiEl.classList.add("unselected-emoji")
+        }
+    }
+}
+
+function resetAllMoodElements(allMoodElements) {
+    for (let moodEmojiEl of allMoodElements) {
+        moodEmojiEl.classList.remove("selected-emoji")
+        moodEmojiEl.classList.remove("unselected-emoji")
+    }
+    
+    moodState = 0
+}
+
+function returnMoodValueFromElementId(elementId) {
+    return Number(elementId.slice(5))
 }
