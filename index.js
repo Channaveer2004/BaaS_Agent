@@ -8,10 +8,14 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     updateProfile,
+
 }
     from "firebase/auth";
 
-import { getFirestore, collection, addDoc } from "firebase/firestore"
+import {
+    getFirestore, collection, addDoc,
+    serverTimestamp
+} from "firebase/firestore"
 
 
 const firebaseConfig = {
@@ -138,12 +142,15 @@ function authSignOut() {
     });
 }
 
-async function addPostToDB(postBody) {
+async function addPostToDB(postBody, user) {
     try {
         const docRef = await addDoc(collection(db, "posts"), {
-            body: postBody
+            body: postBody,
+            uid: user.uid,
+            createdAt: serverTimestamp()
         })
-        console.log("Document written with ID: ", docRef.id)
+        // console.log("Document written with ID: ", docRef.id)
+        // console.log(serverTimestamp())
     } catch (error) {
         console.error(error.message)
     }
@@ -171,9 +178,10 @@ function authUpdateProfile() {
 
 function postButtonPressed() {
     const postBody = textareaEl.value
+    const user = auth.currentUser
 
     if (postBody) {
-        addPostToDB(postBody)
+        addPostToDB(postBody, user)
         textareaEl.value = "";
     }
 }
