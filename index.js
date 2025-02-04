@@ -183,12 +183,25 @@ function authUpdateProfile() {
 
 
 async function fetchOnceAndRenderPostsFromDB() {
-    
     const querySnapshot = await getDocs(collection(db, "posts"))
-    
+    postsEl.innerHTML = "";
     querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data())
+        renderPost(postsEl, doc.data())
     })
+}
+
+function renderPost(postsEl, postData) {
+    postsEl.innerHTML += `
+        <div class="post">
+            <div class="header">
+                <h3>${displayDate(postData.createdAt)}</h3>
+                <img src="assets/emojis/${postData.mood}.png">
+            </div>
+            <p>
+                ${postData.body}
+            </p>
+        </div>
+    `
 }
 
 function postButtonPressed() {
