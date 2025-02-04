@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp
+    serverTimestamp, getDocs
 } from "firebase/firestore"
 
 
@@ -50,6 +50,8 @@ const updateProfileButtonEl = document.getElementById("update-profile-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
+const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
+const postsEl = document.getElementById("posts")
 
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -58,6 +60,7 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 signOutButtonEl.addEventListener("click", authSignOut)
 updateProfileButtonEl.addEventListener("click", authUpdateProfile)
 postButtonEl.addEventListener("click", postButtonPressed)
+fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
 
 
 onAuthStateChanged(auth, (user) => {
@@ -148,7 +151,8 @@ async function addPostToDB(postBody, user) {
         const docRef = await addDoc(collection(db, "posts"), {
             body: postBody,
             uid: user.uid,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            mood: moodState
         })
         // console.log("Document written with ID: ", docRef.id)
         // console.log(serverTimestamp())
@@ -177,13 +181,24 @@ function authUpdateProfile() {
     });
 }
 
+
+async function fetchOnceAndRenderPostsFromDB() {
+    
+    const querySnapshot = await getDocs(collection(db, "posts"))
+    
+    querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data())
+    })
+}
+
 function postButtonPressed() {
     const postBody = textareaEl.value
     const user = auth.currentUser
 
-    if (postBody) {
+    if (postBody && moodState) {
         addPostToDB(postBody, user)
         textareaEl.value = "";
+        resetAllMoodElements(moodEmojiEls)
     }
 }
 
@@ -239,6 +254,22 @@ function showUserGreeting(element, user) {
     }
 }
 
+function displayDate(firebaseDate) {
+    const date = firebaseDate.toDate()
+    
+    const day = date.getDate()
+    const year = date.getFullYear()
+    
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const month = monthNames[date.getMonth()]
+
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    hours = hours < 10 ? "0" + hours : hours
+    minutes = minutes < 10 ? "0" + minutes : minutes
+
+    return `${day} ${month} ${year} - ${hours}:${minutes}`
+}
 
 function selectMood(event) {
     const selectedMoodEmojiElementId = event.currentTarget.id
