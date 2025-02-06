@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp, getDocs
+    serverTimestamp, getDocs, onSnapshot
 } from "firebase/firestore"
 
 
@@ -50,7 +50,7 @@ const updateProfileButtonEl = document.getElementById("update-profile-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
-const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
+// const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
 const postsEl = document.getElementById("posts")
 
 
@@ -60,7 +60,7 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 signOutButtonEl.addEventListener("click", authSignOut)
 updateProfileButtonEl.addEventListener("click", authUpdateProfile)
 postButtonEl.addEventListener("click", postButtonPressed)
-fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
+// fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
 
 
 onAuthStateChanged(auth, (user) => {
@@ -68,6 +68,7 @@ onAuthStateChanged(auth, (user) => {
         showLoggedInView();
         showProfilePicture(userProfilePictureEl, user)
         showUserGreeting(userGreetingEl, user)
+        fetchInRealtimeAndRenderPostsFromDB()
 
     } else {
         showLoggedOutView();
@@ -182,12 +183,22 @@ function authUpdateProfile() {
 }
 
 
-async function fetchOnceAndRenderPostsFromDB() {
-    const querySnapshot = await getDocs(collection(db, "posts"))
-    postsEl.innerHTML = "";
-    querySnapshot.forEach((doc) => {
-        renderPost(postsEl, doc.data())
+// async function fetchOnceAndRenderPostsFromDB() {
+//     const querySnapshot = await getDocs(collection(db, "posts"))
+//     postsEl.innerHTML = "";
+//     querySnapshot.forEach((doc) => {
+//         renderPost(postsEl, doc.data())
+//     })
+// }
+
+function fetchInRealtimeAndRenderPostsFromDB() {
+    onSnapshot(collection(db, "posts"), (querySnapshot) => {
+        postsEl.innerHTML = "";
+        querySnapshot.forEach((doc) => {
+            renderPost(postsEl, doc.data())
+
     })
+})
 }
 
 function renderPost(postsEl, postData) {
@@ -198,10 +209,14 @@ function renderPost(postsEl, postData) {
                 <img src="assets/emojis/${postData.mood}.png">
             </div>
             <p>
-                ${postData.body}
+                ${replaceNewlinesWithBrTags(postData.body)}
             </p>
         </div>
     `
+}
+
+function replaceNewlinesWithBrTags(inputString) {
+    return inputString.replace(/\n/g, "<br>")
 }
 
 function postButtonPressed() {
@@ -268,6 +283,9 @@ function showUserGreeting(element, user) {
 }
 
 function displayDate(firebaseDate) {
+    if (!firebaseDate) {
+        return "Date processing..."
+    }
     const date = firebaseDate.toDate()
     
     const day = date.getDate()
