@@ -223,6 +223,11 @@ function postButtonPressed() {
     const postBody = textareaEl.value
     const user = auth.currentUser
 
+    if(moodState === 0) {
+        alert("Please select a mood")
+        return;
+    }
+
     if (postBody && moodState) {
         addPostToDB(postBody, user)
         textareaEl.value = "";

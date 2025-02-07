@@ -21,7 +21,7 @@
     
     --element-padding: 0.8em;
     
-    --maximum-width: 320px;
+    --maximum-width: 400px;
 }
 
 html, body {
@@ -175,14 +175,17 @@ button:hover {
 .app-container {
     display: flex;
     flex-direction: column;
+    /* background-color: red; */
+    width:max-content ;
     gap: 1em;
+    margin: 0 auto; 
 }
 
 .user-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.8em;
+    gap: 2rem;
 }
 
 .post-section {
@@ -239,12 +242,12 @@ h2,h3 {
 }
 
 .user-section h2 {
-    font-size: 1.2em;
+    font-size: 40px;
 }
 
 .user-section img {
-    width: 3.75em;
-    height: 3.75em;
+    width: 9rem;
+    height: 9rem;
     border-radius: 100%;
     border: var(--border-width) solid var(--dark-color);
 }
@@ -322,8 +325,8 @@ h2,h3 {
 }
 
 .mood-emoji-btn img {
-    width: 3.1em;
-    height: 3.1em;
+    width: 3rem;
+    height: 3rem;
 }
 
 .selected-emoji {
