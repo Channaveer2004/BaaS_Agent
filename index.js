@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp, getDocs, onSnapshot
+    serverTimestamp, getDocs, onSnapshot, query, where
 } from "firebase/firestore"
 
 
@@ -68,7 +68,7 @@ onAuthStateChanged(auth, (user) => {
         showLoggedInView();
         showProfilePicture(userProfilePictureEl, user)
         showUserGreeting(userGreetingEl, user)
-        fetchInRealtimeAndRenderPostsFromDB()
+        fetchInRealtimeAndRenderPostsFromDB(user)
 
     } else {
         showLoggedOutView();
@@ -191,14 +191,19 @@ function authUpdateProfile() {
 //     })
 // }
 
-function fetchInRealtimeAndRenderPostsFromDB() {
-    onSnapshot(collection(db, "posts"), (querySnapshot) => {
+function fetchInRealtimeAndRenderPostsFromDB(user) {
+    const postsRef = collection(db, "posts")
+
+
+    const q = query(postsRef, where("uid", "==", user.uid))
+
+    onSnapshot(q, (querySnapshot) => {
         postsEl.innerHTML = "";
         querySnapshot.forEach((doc) => {
             renderPost(postsEl, doc.data())
 
+        })
     })
-})
 }
 
 function renderPost(postsEl, postData) {
@@ -223,7 +228,7 @@ function postButtonPressed() {
     const postBody = textareaEl.value
     const user = auth.currentUser
 
-    if(moodState === 0) {
+    if (moodState === 0) {
         alert("Please select a mood")
         return;
     }
@@ -292,10 +297,10 @@ function displayDate(firebaseDate) {
         return "Date processing..."
     }
     const date = firebaseDate.toDate()
-    
+
     const day = date.getDate()
     const year = date.getFullYear()
-    
+
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const month = monthNames[date.getMonth()]
 
@@ -309,18 +314,18 @@ function displayDate(firebaseDate) {
 
 function selectMood(event) {
     const selectedMoodEmojiElementId = event.currentTarget.id
-    
+
     changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
-    
+
     const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
-    
+
     moodState = chosenMoodValue
 }
 
 function changeMoodsStyleAfterSelection(selectedMoodElementId, allMoodElements) {
     for (let moodEmojiEl of moodEmojiEls) {
         if (selectedMoodElementId === moodEmojiEl.id) {
-            moodEmojiEl.classList.remove("unselected-emoji")          
+            moodEmojiEl.classList.remove("unselected-emoji")
             moodEmojiEl.classList.add("selected-emoji")
         } else {
             moodEmojiEl.classList.remove("selected-emoji")
@@ -334,7 +339,7 @@ function resetAllMoodElements(allMoodElements) {
         moodEmojiEl.classList.remove("selected-emoji")
         moodEmojiEl.classList.remove("unselected-emoji")
     }
-    
+
     moodState = 0
 }
 
