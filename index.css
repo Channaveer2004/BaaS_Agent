@@ -176,10 +176,10 @@ button:hover {
 .app-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    /* background-color: red; */
+    width:max-content ;
     gap: 1em;
-    margin: 0 auto;
-    
+    margin: 0 auto; 
 }
 
 .filters-and-posts-section {
@@ -192,7 +192,6 @@ button:hover {
 .filters-section {
     display: flex;
     gap: 0.4em;
-    /* flex-wrap: wrap; */
 }
 
 .filter-btn {
@@ -264,32 +263,32 @@ textarea::-ms-input-placeholder { /* Microsoft Edge */
     color: var(--grey-color);
 }
 
-h1, h2, h3, p {
+h1, h2,h3,p {
     margin: 0;
 }
 
-h2, h3 {
+h2,h3 {
     font-weight: 500;
 }
 
 .user-section h2 {
-    font-size: 2em; /* Reduced font size for mobile */
+    font-size: 40px;
 }
 
 .user-section img {
-    width: 7rem; /* Reduced image size for mobile */
-    height: 7rem;
+    width: 9rem;
+    height: 9rem;
     border-radius: 100%;
     border: var(--border-width) solid var(--dark-color);
 }
 
 .icon-btn {
-    width: 100px; 
+    width: 100px;
     height: 50px;
     background-color: var(--post-color);
     position: absolute;
-    top: 20px; /* Adjusted position for mobile */
-    right: 10px;
+    top: 30px;
+    right: 5px;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -299,6 +298,7 @@ h2, h3 {
     cursor: pointer;
     background-color: #00ff8067;
 }
+
 
 .posts-section {
     display: flex;
@@ -338,7 +338,6 @@ h2, h3 {
 
 .mood-emojis {
     display: flex;
-    /* flex-wrap: wrap; */
 }
 
 .mood-emoji-btn {
@@ -356,7 +355,7 @@ h2, h3 {
 }
 
 .mood-emoji-btn img {
-    width: 3rem; /* Reduced emoji size for mobile */
+    width: 3rem;
     height: 3rem;
 }
 
@@ -396,7 +395,7 @@ h2, h3 {
     background-color: var(--delete-color);
 }
 
-/* === Media Queries for Mobile Responsiveness === */
+
 
 @media (max-width: 768px) {
     .app-title {
