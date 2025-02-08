@@ -13,8 +13,19 @@ import {
     from "firebase/auth";
 
 import {
-    getFirestore, collection, addDoc,
-    serverTimestamp, getDocs, onSnapshot, query, where, orderBy, updateDoc, doc
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    getDocs,
+    onSnapshot,
+    query,
+    where,
+    orderBy,
+    updateDoc,
+    doc,
+    deleteDoc,
+
 } from "firebase/firestore"
 
 
@@ -83,7 +94,7 @@ onAuthStateChanged(auth, (user) => {
 function authSignInWithGoogle() {
     signInWithPopup(auth, provider)
         .then((result) => {
-            console.log("Sign in with Google")
+            alert("Sign in with Google")
             alert("Signed in with Google")
 
         }).catch((error) => {
@@ -111,7 +122,7 @@ function authSignInWithEmail() {
 }
 
 function authCreateAccountWithEmail() {
-    console.log("Sign up with email and password")
+    alert("Sign up with email and password")
 
     const email = emailInputEl.value
     const password = passwordInputEl.value
@@ -173,6 +184,10 @@ async function updatePostInDB(docId, newBody) {
     })
 }
 
+async function deletePostFromDB(docId) {
+    await deleteDoc(doc(db, "posts", docId))
+}
+
 function authUpdateProfile() {
     const newDisplayName = displayNameInputEl.value;
     const newPhotoURL = photoURLInputEl.value;
@@ -218,12 +233,9 @@ function fetchInRealtimeAndRenderPostsFromDB(query, user) {
 function fetchTodayPosts(user) {
     const startOfDay = new Date()
     startOfDay.setHours(0, 0, 0, 0)
-
     const endOfDay = new Date()
     endOfDay.setHours(23, 59, 59, 999)
-
     const postsRef = collection(db, "posts")
-
     const q = query(postsRef, where("uid", "==", user.uid),
         where("createdAt", ">=", startOfDay),
         where("createdAt", "<=", endOfDay),
@@ -258,12 +270,9 @@ function fetchMonthPosts(user) {
     const startOfMonth = new Date()
     startOfMonth.setHours(0, 0, 0, 0)
     startOfMonth.setDate(1)
-
     const endOfDay = new Date()
     endOfDay.setHours(23, 59, 59, 999)
-
     const postsRef = collection(db, "posts")
-
     const q = query(postsRef, where("uid", "==", user.uid),
         where("createdAt", ">=", startOfMonth),
         where("createdAt", "<=", endOfDay),
@@ -341,11 +350,27 @@ function createPostUpdateButton(wholeDoc) {
         const newBody = prompt("Edit the post", postData.body)
 
         if (newBody) {
-            console.log(newBody)
+            // console.log(newBody)
             updatePostInDB(postId, newBody)
         }
     })
 
+    return button
+}
+
+function createPostDeleteButton(wholeDoc) {
+    const postId = wholeDoc.id
+
+    /* 
+        <button class="delete-color">Delete</button>
+    */
+    const button = document.createElement('button')
+    button.textContent = 'Delete'
+    button.classList.add("delete-color")
+    button.addEventListener('click', function () {
+        // console.log("Delete post")
+        deletePostFromDB(postId)
+    })
     return button
 }
 
@@ -357,9 +382,8 @@ function createPostFooter(wholeDoc) {
     */
     const footerDiv = document.createElement("div")
     footerDiv.className = "footer"
-
     footerDiv.appendChild(createPostUpdateButton(wholeDoc))
-
+    footerDiv.appendChild(createPostDeleteButton(wholeDoc))
     return footerDiv
 }
 
@@ -384,6 +408,11 @@ function postButtonPressed() {
 
     if (moodState === 0) {
         alert("Please select a mood")
+        return;
+    }
+
+    if(postBody === ""){
+        alert("Please write something")
         return;
     }
 
