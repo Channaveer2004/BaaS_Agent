@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp, getDocs, onSnapshot, query, where
+    serverTimestamp, getDocs, onSnapshot, query, where,orderBy
 } from "firebase/firestore"
 
 
@@ -52,6 +52,8 @@ const postButtonEl = document.getElementById("post-btn")
 const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 // const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
 const postsEl = document.getElementById("posts")
+const allFilterButtonEl = document.getElementById("all-filter-btn")
+const filterButtonEls = document.getElementsByClassName("filter-btn")
 
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -68,7 +70,7 @@ onAuthStateChanged(auth, (user) => {
         showLoggedInView();
         showProfilePicture(userProfilePictureEl, user)
         showUserGreeting(userGreetingEl, user)
-        fetchInRealtimeAndRenderPostsFromDB(user)
+        // fetchInRealtimeAndRenderPostsFromDB(user)
 
     } else {
         showLoggedOutView();
@@ -191,19 +193,56 @@ function authUpdateProfile() {
 //     })
 // }
 
-function fetchInRealtimeAndRenderPostsFromDB(user) {
-    const postsRef = collection(db, "posts")
+function fetchInRealtimeAndRenderPostsFromDB(query,user) {
+    // const postsRef = collection(db, "posts")
+    // const q = query(postsRef, where("uid", "==", user.uid),orderBy("createdAt", "desc"))
 
-
-    const q = query(postsRef, where("uid", "==", user.uid))
-
-    onSnapshot(q, (querySnapshot) => {
+    onSnapshot(query, (querySnapshot) => {
         postsEl.innerHTML = "";
         querySnapshot.forEach((doc) => {
             renderPost(postsEl, doc.data())
 
         })
     })
+}
+
+function fetchTodayPosts(user) {
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+    
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+    
+    const postsRef = collection(db, "posts")
+    
+    const q = query(postsRef, where("uid", "==", user.uid),
+                              where("createdAt", ">=", startOfDay),
+                              where("createdAt", "<=", endOfDay),
+                              orderBy("createdAt", "desc"))
+                              
+    fetchInRealtimeAndRenderPostsFromDB(q, user)                  
+}
+
+
+function fetchWeekPosts(user) {
+    const startOfWeek = new Date()
+    startOfWeek.setHours(0, 0, 0, 0)
+    
+    if (startOfWeek.getDay() === 0) { // If today is Sunday
+        startOfWeek.setDate(startOfWeek.getDate() - 6) // Go to previous Monday
+    } else {
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1)
+    }
+    
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+    const postsRef = collection(db, "posts")
+    const q = query(postsRef, where("uid", "==", user.uid),
+                              where("createdAt", ">=", startOfWeek),
+                              where("createdAt", "<=", endOfDay),
+                              orderBy("createdAt", "desc"))
+                              
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
 
 function renderPost(postsEl, postData) {
@@ -243,8 +282,11 @@ function postButtonPressed() {
 for (let moodEmojiEl of moodEmojiEls) {
     moodEmojiEl.addEventListener("click", selectMood)
 }
-
 let moodState = 0;
+
+for (let filterButtonEl of filterButtonEls) {
+    filterButtonEl.addEventListener("click", selectFilter)
+}
 
 function showLoggedOutView() {
     hideView(viewLoggedIn)
@@ -281,7 +323,7 @@ function showUserGreeting(element, user) {
     const displayName = user.displayName;
     if (displayName) {
         const userFirstName = displayName.split(" ")[0]
-        element.textContent = `Hey ${userFirstName}, how are you?`
+        element.textContent = `Hey ${userFirstName}, how are you..?`
         displayNameInputEl.style.display = "none";
         photoURLInputEl.style.display = "none";
         updateProfileButtonEl.style.display = "none";
@@ -345,4 +387,24 @@ function resetAllMoodElements(allMoodElements) {
 
 function returnMoodValueFromElementId(elementId) {
     return Number(elementId.slice(5))
+}
+
+function resetAllFilterButtons(allFilterButtons) {
+    for (let filterButtonEl of allFilterButtons) {
+        filterButtonEl.classList.remove("selected-filter")
+    }
+}
+
+function updateFilterButtonStyle(element) {
+    element.classList.add("selected-filter")
+}
+
+function selectFilter(event) {
+    const user = auth.currentUser
+    const selectedFilterElementId = event.target.id
+    const selectedFilterPeriod = selectedFilterElementId.split("-")[0]
+    const selectedFilterElement = document.getElementById(selectedFilterElementId)
+    resetAllFilterButtons(filterButtonEls)
+    updateFilterButtonStyle(selectedFilterElement)
+    fetchWeekPosts(user)
 }
