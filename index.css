@@ -1,17 +1,17 @@
 :root {
-    --primary-color: #FFDE00;
-    --primary-light-color: #FFE769;
-    --secondary-color: #FFE4BA;
-    --secondary-light-color: #FFF6E8;
-    --post-color: #62EEA8;
-    --delete-color: #FF9F9F;
-    --light-color: #FFFEFC;
-    --grey-color: #747E79;
-    --dark-color: #000000;
-    --white-color: #FFFEFC;
+    --primary-color: #4CAF50; /* Green */
+    --primary-light-color: #81C784; /* Light Green */
+    --secondary-color: #FFCDD2; /* Light Red */
+    --secondary-light-color: #FFEBEE; /* Lightest Red */
+    --post-color: #64B5F6; /* Light Blue */
+    --delete-color: #E57373; /* Light Red */
+    --light-color: #FFFFFF; /* White */
+    --grey-color: #9E9E9E; /* Grey */
+    --dark-color: #212121; /* Dark Grey */
+    --white-color: #FFFFFF; /* White */
 
     --primary-font: 'Cabin', sans-serif;
-    --seconday-font: 'Calistoga', sans-serif;
+    --secondary-font: 'Calistoga', sans-serif;
     
     --border-width: 3px;
     --element-border-radius: 5px;
@@ -44,7 +44,7 @@ h1 {
 }
 
 .app-title {
-    font-family: var(--seconday-font);
+    font-family: var(--secondary-font);
     font-size: 2.5em;
     text-align: center;
 }
@@ -285,7 +285,7 @@ h2,h3 {
 .icon-btn {
     width: 100px;
     height: 50px;
-    background-color: #62EEA8;
+    background-color: var(--post-color);
     position: absolute;
     top: 30px;
     right: 5px;
@@ -304,7 +304,7 @@ h2,h3 {
     display: flex;
     flex-direction: column;
     gap: 1em;
-	margin-bottom: 1.8em;
+    margin-bottom: 1.8em;
 }
 
 .post {
