@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp, getDocs, onSnapshot, query, where, orderBy
+    serverTimestamp, getDocs, onSnapshot, query, where, orderBy, updateDoc, doc
 } from "firebase/firestore"
 
 
@@ -166,6 +166,13 @@ async function addPostToDB(postBody, user) {
     }
 }
 
+async function updatePostInDB(docId, newBody) {
+    const postRef = doc(db, "posts", docId)
+    await updateDoc(postRef, {
+        body: newBody
+    })
+}
+
 function authUpdateProfile() {
     const newDisplayName = displayNameInputEl.value;
     const newPhotoURL = photoURLInputEl.value;
@@ -202,7 +209,7 @@ function fetchInRealtimeAndRenderPostsFromDB(query, user) {
     onSnapshot(query, (querySnapshot) => {
         postsEl.innerHTML = "";
         querySnapshot.forEach((doc) => {
-            renderPost(postsEl, doc.data())
+            renderPost(postsEl, doc)
 
         })
     })
@@ -285,18 +292,86 @@ function fetchPostsFromPeriod(period, user) {
     }
 }
 
-function renderPost(postsEl, postData) {
-    postsEl.innerHTML += `
-        <div class="post">
-            <div class="header">
-                <h3>${displayDate(postData.createdAt)}</h3>
-                <img src="assets/emojis/${postData.mood}.png">
-            </div>
-            <p>
-                ${replaceNewlinesWithBrTags(postData.body)}
-            </p>
+function createPostHeader(postData) {
+    /*
+        <div class="header">
         </div>
-    `
+    */
+    const headerDiv = document.createElement("div")
+    headerDiv.className = "header"
+
+    /* 
+        <h3>21 Sep 2023 - 14:35</h3>
+    */
+    const headerDate = document.createElement("h3")
+    headerDate.textContent = displayDate(postData.createdAt)
+    headerDiv.appendChild(headerDate)
+
+    /* 
+        <img src="assets/emojis/5.png">
+    */
+    const moodImage = document.createElement("img")
+    moodImage.src = `assets/emojis/${postData.mood}.png`
+    headerDiv.appendChild(moodImage)
+
+    return headerDiv
+}
+
+function createPostBody(postData) {
+    /*
+        <p>This is a post</p>
+    */
+    const postBody = document.createElement("p")
+    postBody.innerHTML = replaceNewlinesWithBrTags(postData.body)
+
+    return postBody
+}
+
+function createPostUpdateButton(wholeDoc) {
+    const postId = wholeDoc.id
+    const postData = wholeDoc.data()
+
+    /* 
+        <button class="edit-color">Edit</button>
+    */
+    const button = document.createElement("button")
+    button.textContent = "Edit"
+    button.classList.add("edit-color")
+    button.addEventListener("click", function () {
+        const newBody = prompt("Edit the post", postData.body)
+
+        if (newBody) {
+            console.log(newBody)
+            updatePostInDB(postId, newBody)
+        }
+    })
+
+    return button
+}
+
+function createPostFooter(wholeDoc) {
+    /* 
+        <div class="footer">
+            <button>Edit</button>
+        </div>
+    */
+    const footerDiv = document.createElement("div")
+    footerDiv.className = "footer"
+
+    footerDiv.appendChild(createPostUpdateButton(wholeDoc))
+
+    return footerDiv
+}
+
+function renderPost(postsEl, wholeDoc) {
+    const postData = wholeDoc.data()
+    const postDiv = document.createElement("div")
+    postDiv.className = "post"
+    postDiv.appendChild(createPostHeader(postData))
+    postDiv.appendChild(createPostBody(postData))
+    postDiv.appendChild(createPostFooter(wholeDoc))
+    postsEl.appendChild(postDiv)
+
 }
 
 function replaceNewlinesWithBrTags(inputString) {
