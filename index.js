@@ -14,7 +14,7 @@ import {
 
 import {
     getFirestore, collection, addDoc,
-    serverTimestamp, getDocs, onSnapshot, query, where,orderBy
+    serverTimestamp, getDocs, onSnapshot, query, where, orderBy
 } from "firebase/firestore"
 
 
@@ -71,6 +71,8 @@ onAuthStateChanged(auth, (user) => {
         showProfilePicture(userProfilePictureEl, user)
         showUserGreeting(userGreetingEl, user)
         // fetchInRealtimeAndRenderPostsFromDB(user)
+        updateFilterButtonStyle(allFilterButtonEl)
+        fetchAllPosts(user)
 
     } else {
         showLoggedOutView();
@@ -193,7 +195,7 @@ function authUpdateProfile() {
 //     })
 // }
 
-function fetchInRealtimeAndRenderPostsFromDB(query,user) {
+function fetchInRealtimeAndRenderPostsFromDB(query, user) {
     // const postsRef = collection(db, "posts")
     // const q = query(postsRef, where("uid", "==", user.uid),orderBy("createdAt", "desc"))
 
@@ -209,40 +211,78 @@ function fetchInRealtimeAndRenderPostsFromDB(query,user) {
 function fetchTodayPosts(user) {
     const startOfDay = new Date()
     startOfDay.setHours(0, 0, 0, 0)
-    
+
     const endOfDay = new Date()
     endOfDay.setHours(23, 59, 59, 999)
-    
+
     const postsRef = collection(db, "posts")
-    
+
     const q = query(postsRef, where("uid", "==", user.uid),
-                              where("createdAt", ">=", startOfDay),
-                              where("createdAt", "<=", endOfDay),
-                              orderBy("createdAt", "desc"))
-                              
-    fetchInRealtimeAndRenderPostsFromDB(q, user)                  
+        where("createdAt", ">=", startOfDay),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
 
 
 function fetchWeekPosts(user) {
     const startOfWeek = new Date()
     startOfWeek.setHours(0, 0, 0, 0)
-    
+
     if (startOfWeek.getDay() === 0) { // If today is Sunday
         startOfWeek.setDate(startOfWeek.getDate() - 6) // Go to previous Monday
     } else {
         startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1)
     }
-    
+
     const endOfDay = new Date()
     endOfDay.setHours(23, 59, 59, 999)
     const postsRef = collection(db, "posts")
     const q = query(postsRef, where("uid", "==", user.uid),
-                              where("createdAt", ">=", startOfWeek),
-                              where("createdAt", "<=", endOfDay),
-                              orderBy("createdAt", "desc"))
-                              
+        where("createdAt", ">=", startOfWeek),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
     fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchMonthPosts(user) {
+    const startOfMonth = new Date()
+    startOfMonth.setHours(0, 0, 0, 0)
+    startOfMonth.setDate(1)
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+
+    const postsRef = collection(db, "posts")
+
+    const q = query(postsRef, where("uid", "==", user.uid),
+        where("createdAt", ">=", startOfMonth),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchAllPosts(user) {
+    const postsRef = collection(db, "posts")
+    const q = query(postsRef, where("uid", "==", user.uid),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchPostsFromPeriod(period, user) {
+    if (period === "today") {
+        fetchTodayPosts(user)
+    } else if (period === "week") {
+        fetchWeekPosts(user)
+    } else if (period === "month") {
+        fetchMonthPosts(user)
+    } else {
+        fetchAllPosts(user)
+    }
 }
 
 function renderPost(postsEl, postData) {
@@ -406,5 +446,5 @@ function selectFilter(event) {
     const selectedFilterElement = document.getElementById(selectedFilterElementId)
     resetAllFilterButtons(filterButtonEls)
     updateFilterButtonStyle(selectedFilterElement)
-    fetchWeekPosts(user)
+    fetchPostsFromPeriod(selectedFilterPeriod, user)
 }
