@@ -176,10 +176,10 @@ button:hover {
 .app-container {
     display: flex;
     flex-direction: column;
-    /* background-color: red; */
-    width:max-content ;
+    width: 100%;
     gap: 1em;
-    margin: 0 auto; 
+    margin: 0 auto;
+    
 }
 
 .filters-and-posts-section {
@@ -192,6 +192,7 @@ button:hover {
 .filters-section {
     display: flex;
     gap: 0.4em;
+    /* flex-wrap: wrap; */
 }
 
 .filter-btn {
@@ -263,32 +264,32 @@ textarea::-ms-input-placeholder { /* Microsoft Edge */
     color: var(--grey-color);
 }
 
-h1, h2,h3,p {
+h1, h2, h3, p {
     margin: 0;
 }
 
-h2,h3 {
+h2, h3 {
     font-weight: 500;
 }
 
 .user-section h2 {
-    font-size: 40px;
+    font-size: 2em; /* Reduced font size for mobile */
 }
 
 .user-section img {
-    width: 9rem;
-    height: 9rem;
+    width: 7rem; /* Reduced image size for mobile */
+    height: 7rem;
     border-radius: 100%;
     border: var(--border-width) solid var(--dark-color);
 }
 
 .icon-btn {
-    width: 100px;
+    width: 100px; 
     height: 50px;
     background-color: var(--post-color);
     position: absolute;
-    top: 30px;
-    right: 5px;
+    top: 20px; /* Adjusted position for mobile */
+    right: 10px;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -298,7 +299,6 @@ h2,h3 {
     cursor: pointer;
     background-color: #00ff8067;
 }
-
 
 .posts-section {
     display: flex;
@@ -338,6 +338,7 @@ h2,h3 {
 
 .mood-emojis {
     display: flex;
+    /* flex-wrap: wrap; */
 }
 
 .mood-emoji-btn {
@@ -355,7 +356,7 @@ h2,h3 {
 }
 
 .mood-emoji-btn img {
-    width: 3rem;
+    width: 3rem; /* Reduced emoji size for mobile */
     height: 3rem;
 }
 
@@ -393,4 +394,79 @@ h2,h3 {
 
 .post .footer .delete-color {
     background-color: var(--delete-color);
+}
+
+/* === Media Queries for Mobile Responsiveness === */
+
+@media (max-width: 768px) {
+    .app-title {
+        font-size: 3em; /* Smaller title for mobile */
+    }
+
+    .container {
+        padding: 0 1em; /* Add padding to container for better spacing */
+    }
+
+    .user-section h2 {
+        font-size: 1.5em; /* Smaller font size for mobile */
+    }
+
+    .user-section img {
+        width: 6rem; /* Smaller image for mobile */
+        height: 6rem;
+    }
+
+    .icon-btn {
+        width: 100px; /* Smaller button for mobile */
+        height: 35px;
+        top: 15px;
+    }
+
+    .mood-emoji-btn img {
+        width: 2rem; /* Smaller emojis for mobile */
+        height: 2rem;
+    }
+
+    .post .header h3 {
+        font-size: 0.9em; /* Smaller font size for mobile */
+    }
+
+    .post p {
+        font-size: 0.8em; /* Smaller font size for mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .app-title {
+        font-size: 1.8em; /* Even smaller title for very small screens */
+    }
+
+    .user-section h2 {
+        font-size: 1.8em; /* Smaller font size for very small screens */
+    }
+
+    .user-section img {
+        width: 6.5rem; /* Smaller image for very small screens */
+        height: 6.5rem;
+    }
+
+    .icon-btn {
+        width: 100px; /* Smaller button for very small screens */
+        height: 30px;
+        top: 10px;
+        /* background-color: red; */
+    }
+
+    .mood-emoji-btn img {
+        width: 3.5rem; /* Smaller emojis for very small screens */
+        height: 3.5rem;
+    }
+
+    .post .header h3 {
+        font-size: 1em; /* Smaller font size for very small screens */
+    }
+
+    .post p {
+        font-size: 1.5em; /* Smaller font size for very small screens */
+    }
 }
