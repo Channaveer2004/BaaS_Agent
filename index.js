@@ -320,7 +320,7 @@ function createPostHeader(postData) {
         <img src="assets/emojis/5.png">
     */
     const moodImage = document.createElement("img")
-    moodImage.src = `assets/emojis/${postData.mood}.png`
+    moodImage.src = `public/emojis/${postData.mood}.png`
     headerDiv.appendChild(moodImage)
 
     return headerDiv
